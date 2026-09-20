@@ -26,14 +26,14 @@ Istio - Cilium - Envoy - Gateway API - Hubble - Prometheus - Helm - Jaeger - cer
 
 _Notes:_
 
-Install Cilium Binary -> `cilium install`
-Before CNI, the Node would be 'Not Ready' status
+- Install Cilium Binary -> `cilium install`
+- Before CNI, the Node would be 'Not Ready' status
 
-###### Custom CNI
+#### Custom CNI
 - you could setup a custom CNI by writing directly to `/etc/cni/net.d`, then node would be Ready
 - Installing CNI would overwrite `/etc/cni/net.d` by default, and suffix any other config with `-backup`
 
-###### `cilium install`
+#### `cilium install`
 - it'd setup cilium daemonset that run on every node
 - you'll see `/etc/cni/net.d/05-cilium.conflist` and `/opt/cni/bin/cilium-cni`
 - kubelet on each node use `cilium-cni` binary to interact with cilium-agent pod, which then talk to API Server
@@ -47,7 +47,7 @@ _Resources:_
 
 _Notes:_
 
-2 Ways to setup IPAM - 
+2 Ways to setup IPAM:
 
 1. Kubernetes Host scope (Kubernetes native managed)
 2. Cluster scope (CNI-managed)
@@ -79,13 +79,13 @@ _Notes:_
 
 - By default, all pod can talk to each other
 
-##### CoreDNS
+#### CoreDNS
 
 - CoreDNS can create an A record for every pod in this form:
 `<pod-ip-with-dashes>.<namespace>.pod.cluster.local`
 - If CoreDNS broken
--- `ping 10-244-1-5.default.pod.cluster.local` fails
--- `ping 10.244.1.5` (pod IP) still works
+  - `ping 10-244-1-5.default.pod.cluster.local` fails
+  - `ping 10.244.1.5` (pod IP) still works
 - Kubelet writes `/etc/resolv.conf` into every pod, which resolves DNS to kubedns services. Meaning if this file is broken, pod wouldn't be able to refer any name (Pod IP still works)
 - `kube-dns` service forwards to CoreDNS pods created by coredns deployment in kube-system ns.
 
@@ -221,7 +221,7 @@ _Notes:_
 
 - For Egress, rmb to create a rule to allow all pods accessible to `kube-dns` service, at TCP and UDP port 53 (`k -n kube-system get svc`)
 - For kube-proxy enabled cluster, NP modify iptables rules
-- Some CNI doesn't support NP, like Flannel. NP just created as normal Kubernetes object without any functinoalities
+- Some CNI doesn't support NP, like Flannel. NP just created as normal Kubernetes object without any functionalities
 
 _Resources:_
 
@@ -273,5 +273,5 @@ _Resources:_
 _Notes:_
 
 - Hubble
-- 
+
 _Resources:_
