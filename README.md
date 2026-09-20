@@ -4,13 +4,19 @@ Personal prep notes for the **Certified Kubernetes Networking Engineer (CKNE)** 
 
 Each topic below maps to a domain in the official curriculum. Notes and resources get filled in as I go.
 
-## Contents
+## Progress
 
-- [Core Infrastructure and CNI (15%)](#core-infrastructure-and-cni-15)
-- [Service Networking and DNS (25%)](#service-networking-and-dns-25)
-- [Advanced Traffic Management (20%)](#advanced-traffic-management-20)
-- [Network Security and Policy (25%)](#network-security-and-policy-25)
-- [Observability (15%)](#observability-15)
+| Domain | Weight | Written | Topics |
+|---|---:|---:|---|
+| [Core Infrastructure and CNI](#core-infrastructure-and-cni-15) | 15% | 4/5 | ✅✅✅✅🟡 |
+| [Service Networking and DNS](#service-networking-and-dns-25) | 25% | 1/6 | ⬜🟡⬜✅⬜🟡 |
+| [Advanced Traffic Management](#advanced-traffic-management-20) | 20% | 1/4 | ✅⬜⬜⬜ |
+| [Network Security and Policy](#network-security-and-policy-25) | 25% | 2/4 | ✅⬜✅🟡 |
+| [Observability](#observability-15) | 15% | 0/3 | 🟡🟡🟡 |
+| **Total** | **100%** | **8/22** | |
+
+One marker per topic, in the order they appear in that domain:
+✅ written up &nbsp;·&nbsp; 🟡 started, needs depth &nbsp;·&nbsp; ⬜ not started
 
 ## Resources used in exam
 
@@ -70,6 +76,31 @@ Ideas to know:
 - How to use `tcpdump` to track packet going through a network interface
 - Kubernetes Services are Virtual IP, they're essentially rules under `iptables rules` that forward to other pod endpoints
 
+Pod-to-pod packet path (what `ip` and `tcpdump` are actually showing you):
+
+```mermaid
+flowchart LR
+    subgraph NA["Node A"]
+        direction LR
+        PA["Pod A netns<br/>eth0 · 10.244.1.5"]
+        LA["veth peer on host<br/>lxc1a2b@if7"]
+        HA["Node A route table<br/>10.244.2.0/24 via ..."]
+        PA <--> LA <--> HA
+    end
+    subgraph NB["Node B"]
+        direction LR
+        HB["Node B route table<br/>10.244.2.0/24 local"]
+        LB["veth peer on host<br/>lxc9z8y@if9"]
+        PB["Pod B netns<br/>eth0 · 10.244.2.8"]
+        HB <--> LB <--> PB
+    end
+    HA <==>|"node NIC → node NIC<br/>VXLAN / Geneve encap,<br/>or native routing"| HB
+```
+
+Where to look at each hop:
+- inside the pod -> `k exec` + `ip a`, note the `@ifN` index on `eth0`
+- host side of the veth -> `ip link | grep ifN` on that node finds the peer
+- on the wire -> `tcpdump -i <veth>` for the pod's own traffic, `tcpdump -i <node NIC>` for the inter-node leg
 
 _Resources:_
 
@@ -148,6 +179,25 @@ _Resources:_
 _Notes:_
 
 GC -> GTW (TLS, protocol) -> HttpRoute (routing, paths) => SVC => Deployment => Pod
+
+```mermaid
+flowchart TD
+    GC["GatewayClass<br/>controllerName: cilium / istio"]
+    GW["Gateway<br/>listeners: port · protocol · hostname · TLS"]
+    SEC["Secret<br/>type: kubernetes.io/tls"]
+    HR["HTTPRoute<br/>hostnames · matches · filters"]
+    SVC["Service"]
+    EPS["EndpointSlice"]
+    POD["Pods"]
+
+    GC -.->|"Gateway.spec.gatewayClassName"| GW
+    SEC -.->|"Gateway.spec.listeners[].tls.certificateRefs"| GW
+    GW -.->|"HTTPRoute.spec.parentRefs"| HR
+    HR -.->|"HTTPRoute.spec.rules[].backendRefs"| SVC
+    SVC --> EPS --> POD
+```
+
+Dotted edge = a reference you write in YAML; the label names the field **and the object that declares it**, so the arrow points the opposite way to the ref itself (the HTTPRoute names the Gateway, not vice versa). Solid edge = resolved at runtime.
 
 _Resources:_
 
