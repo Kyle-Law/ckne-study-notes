@@ -20,17 +20,50 @@ Each topic below maps to a domain in the official curriculum. Notes and resource
 
 _Notes:_
 
+Install Cilium Binary -> `cilium install`
+Before CNI, the Node would be 'Not Ready' status
+
+###### Custom CNI
+- you could setup a custom CNI by writing directly to `/etc/cni/net.d`, then node would be Ready
+- Installing CNI would overwrite `/etc/cni/net.d` by default, and suffix any other config with `-backup`
+
+###### `cilium install`
+- it'd setup cilium daemonset that run on every node
+- you'll see `/etc/cni/net.d/05-cilium.conflist` and `/opt/cni/bin/cilium-cni`
+- kubelet on each node use `cilium-cni` binary to interact with cilium-agent pod, which then talk to API Server
+
 _Resources:_
+
+- https://killercoda.com/kylelaw/course/ckne/cni-install-and-configure
+- labs.isovalent.com --> Foundations: Getting Started with Kubernetes Networking & Cilium
 
 ### Managing IPAM and Pod CIDR Allocation
 
 _Notes:_
 
+2 Ways to setup IPAM - 
+
+1. Kubernetes Host scope (Kubernetes native managed)
+2. Cluster scope (CNI-managed)
+
 _Resources:_
+
+- labs.isovalent.com --> Cilium IPAM Lab
 
 ### Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues
 
 _Notes:_
+
+Usage:
+- `ip a` show all IP Address
+- `tcpdump -i <NIC name>` to see packet going through the NIC
+- `sudo iptables -t nat -L KUBE-SERVICES -n -v --line-numbers` to see iptables related to Kubernetes services 
+
+Ideas to know:
+- How to use `ip` to get the veth pair from pod to the host network
+- How to use `tcpdump` to track packet going through a network interface
+- Kubernetes Services are Virtual IP, they're essentially rules under `iptables rules` that forward to other pod endpoints
+
 
 _Resources:_
 
