@@ -12,6 +12,12 @@ Each topic below maps to a domain in the official curriculum. Notes and resource
 - [Network Security and Policy (25%)](#network-security-and-policy-25)
 - [Observability (15%)](#observability-15)
 
+## Resources used in exam
+
+https://docs.linuxfoundation.org/tc-docs/certification/important-instructions-ckne
+
+Istio - Cilium - Envoy - Gateway API - Hubble - Prometheus - Helm - Jaeger - cert-manager
+
 ---
 
 ## Core Infrastructure and CNI (15%)
@@ -122,6 +128,13 @@ _Resources:_
 
 _Notes:_
 
+- Few types of Services: NodePort, ClusterIP, Headless, LoadBalancer, etc...
+- Behind NodePort, there's still a ClusterIP (basically there's still a virtual IP to the NodePort service)
+- Behind every services, there're `endpoints` objects telling you which Pod IP to forward traffic to
+- For kube-proxy enabled cluster, can observe the services and pod IPs in `iptables rules`
+- Can extend service CIDR with `servicecidr` object
+- `k get servicecidr` to see the available service CIDR
+
 _Resources:_
 
 ### Configuring Pod Endpoint Availability
@@ -152,6 +165,8 @@ InferencePool CRD
 
 GC -> GTW (TLS, protocol) -> HttpRoute (routing, paths) -> InferencePool -> SVC -> Deployment (EPP)
 
+Swimlane Diagram:
+
 ```mermaid
 sequenceDiagram
     participant C as Client
@@ -175,6 +190,8 @@ sequenceDiagram
 ```
 
 _Resources:_
+
+- https://killercoda.com/kylelaw/course/ckne/inference-pool-by-hand
 
 ### Implementing Routing to Expose Networks
 
@@ -202,6 +219,10 @@ _Resources:_
 
 _Notes:_
 
+- For Egress, rmb to create a rule to allow all pods accessible to `kube-dns` service, at TCP and UDP port 53 (`k -n kube-system get svc`)
+- For kube-proxy enabled cluster, NP modify iptables rules
+- Some CNI doesn't support NP, like Flannel. NP just created as normal Kubernetes object without any functinoalities
+
 _Resources:_
 
 ### Implementing Node and Pod Level Encryption
@@ -214,11 +235,16 @@ _Resources:_
 
 _Notes:_
 
+1) TLS Secret
+2) Setup during Gateway. (use `k explain gateway...` to figure out the tls fields during exam, or refer to Gateway API documentation
+
 _Resources:_
 
 ### Implementing Pod-level Authentication and Authorization
 
 _Notes:_
+
+- Pod Level is setup with Istio
 
 _Resources:_
 
@@ -230,11 +256,15 @@ _Resources:_
 
 _Notes:_
 
+- Prometheus, Hubble
+
 _Resources:_
 
 ### Troubleshooting End to End Network Performance with Tracing
 
 _Notes:_
+
+Jaeger
 
 _Resources:_
 
@@ -242,4 +272,6 @@ _Resources:_
 
 _Notes:_
 
+- Hubble
+- 
 _Resources:_
