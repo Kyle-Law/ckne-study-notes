@@ -71,11 +71,25 @@ _Resources:_
 
 _Notes:_
 
+- By default, all pod can talk to each other
+
+##### CoreDNS
+
+- CoreDNS can create an A record for every pod in this form:
+`<pod-ip-with-dashes>.<namespace>.pod.cluster.local`
+- If CoreDNS broken
+-- `ping 10-244-1-5.default.pod.cluster.local` fails
+-- `ping 10.244.1.5` (pod IP) still works
+- Kubelet writes `/etc/resolv.conf` into every pod, which resolves DNS to kubedns services. Meaning if this file is broken, pod wouldn't be able to refer any name (Pod IP still works)
+- `kube-dns` service forwards to CoreDNS pods created by coredns deployment in kube-system ns.
+
 _Resources:_
 
 ### Configuring Multi-interface Pods
 
 _Notes:_
+
+I searched online and ... Multus is the best practice for this.
 
 _Resources:_
 
@@ -92,6 +106,9 @@ _Resources:_
 ### Understanding kube-proxy and CNI Alternatives
 
 _Notes:_
+
+- In Cilium, it can enable `kube-proxy-replacement` to not use kube-proxy entirely.
+
 
 _Resources:_
 
@@ -117,7 +134,11 @@ _Resources:_
 
 _Notes:_
 
+GC -> GTW (TLS, protocol) -> HttpRoute (routing, paths) => SVC => Deployment => Pod
+
 _Resources:_
+
+https://killercoda.com/cka-mock-practice/scenario/configure-kubernetes-gateway-api
 
 ---
 
@@ -126,6 +147,32 @@ _Resources:_
 ### Optimizing LLM Traffic
 
 _Notes:_
+
+InferencePool CRD
+
+GC -> GTW (TLS, protocol) -> HttpRoute (routing, paths) -> InferencePool -> SVC -> Deployment (EPP)
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant G as Gateway
+    participant E as EPP
+    participant V as vLLM pods
+
+    loop Background (always running)
+        E->>V: Scrape /metrics (port 8000)
+        V-->>E: Queue depth, KV-cache, LoRA
+    end
+
+    C->>G: POST /v1/chat/completions
+    Note over G: Match HTTPRoute<br/>backendRef: InferencePool
+    G->>E: Ask which pod (gRPC ext_proc)
+    Note over E: Pick best pod<br/>from cached metrics
+    E-->>G: x-gateway-destination-endpoint: 10.0.1.6:8000
+    G->>V: Forward request to 10.0.1.6:8000
+    V-->>G: Inference response
+    G-->>C: Response
+```
 
 _Resources:_
 
