@@ -8,12 +8,12 @@ Each topic below maps to a domain in the official curriculum. Notes and resource
 
 | Domain | Weight | Written | Topics |
 |---|---:|---:|---|
-| [Core Infrastructure and CNI](#core-infrastructure-and-cni-15) | 15% | 4/5 | ✅✅✅✅🟡 |
-| [Service Networking and DNS](#service-networking-and-dns-25) | 25% | 1/6 | ⬜🟡⬜✅⬜🟡 |
+| [Core Infrastructure and CNI](#core-infrastructure-and-cni-15) | 15% | 5/5 | ✅✅✅✅✅ |
+| [Service Networking and DNS](#service-networking-and-dns-25) | 25% | 2/6 | ✅🟡⬜✅⬜🟡 |
 | [Advanced Traffic Management](#advanced-traffic-management-20) | 20% | 1/4 | ✅⬜⬜⬜ |
-| [Network Security and Policy](#network-security-and-policy-25) | 25% | 2/4 | ✅⬜✅🟡 |
+| [Network Security and Policy](#network-security-and-policy-25) | 25% | 3/4 | ✅✅✅🟡 |
 | [Observability](#observability-15) | 15% | 0/3 | 🟡🟡🟡 |
-| **Total** | **100%** | **8/22** | |
+| **Total** | **100%** | **11/22** | |
 
 One marker per topic, in the order they appear in that domain:
 ✅ written up &nbsp;·&nbsp; 🟡 started, needs depth &nbsp;·&nbsp; ⬜ not started
