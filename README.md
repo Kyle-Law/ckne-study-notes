@@ -138,6 +138,13 @@ _Resources:_
 
 _Notes:_
 
+- a Kubernetes Service is essentially an L4 construct.
+- kube-proxy implements ClusterIP/NodePort/LoadBalancer as iptables or IPVS NAT rules that match on destination IP + port + protocol (TCP/UDP/SCTP) and DNAT to a backend pod IP.
+- Headless Services (clusterIP: None) aren't even L4. They're just DNS records returning pod IPs, and the client does its own balancing.
+- `type: LoadBalancer` hands off to a cloud LB, which is usually L4 (NLB, TCP-mode), but some providers can be annotated into L7 mode. The Service object itself is still L4.
+- L7 routing in k8s lives in Ingress, Gateway API, or a service mesh.
+- Summarize: Service = L3/L4 virtual IP + port mapping, plus a DNS name. Anything smarter is a layer above it.
+
 _Resources:_
 
 ### Understanding kube-proxy and CNI Alternatives
@@ -317,6 +324,20 @@ _Notes:_
 Jaeger
 
 _Resources:_
+
+Hubble
+- https://killercoda.com/kylelaw/course/ckne/flow-logs-and-drops
+- 
+
+Jaeger
+- https://killercoda.com/tekton/course/operations-observability/opentelemetry-jaeger
+- https://killercoda.com/saiyampathak/course/cnpe/18-jaeger-tracing-otel
+- https://killercoda.com/parker-smits/course/Zebra/jaeger
+- https://killercoda.com/course-cnpe/scenario/playground-opentelemetry-jaeger
+- https://killercoda.com/parker-smits/course/northrop/observability
+- https://killercoda.com/cloud-origins/course/scenarios/32-opentelemetry-traces
+- 
+
 
 ### Auditing Traffic with Logs
 
