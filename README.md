@@ -1,4 +1,4 @@
-# CKNE Study Notes
+f# CKNE Study Notes
 
 Personal prep notes for the **Certified Kubernetes Networking Engineer (CKNE)** exam.
 
@@ -104,7 +104,7 @@ Where to look at each hop:
 
 _Resources:_
 
-### Troubleshooting Pod Connectivity (DNS, pod-to-pod)
+### Troubleshooting Pod Connectivity (, pod-to-pod)
 
 _Notes:_
 
@@ -162,7 +162,57 @@ _Resources:_
 
 _Notes:_
 
+- CoreDNS relies on a ConfigMap - coredns
+- The CM is essentially the CoreFile mentioned in the official doc.
+- You can modify this CM and restart coreDNS deployment to update it
+
+```
+ubuntu@k8s-t1-cp1:~$ k -n kube-system describe cm coredns 
+Name:         coredns
+Namespace:    kube-system
+Labels:       <none>
+Annotations:  <none>
+
+Data
+====
+Corefile:
+----
+.:53 {
+    errors
+    health {
+       lameduck 5s
+    }
+    ready
+    kubernetes cluster.local in-addr.arpa ip6.arpa {
+       pods insecure
+       fallthrough in-addr.arpa ip6.arpa
+       ttl 30
+    }
+    prometheus :9153
+    forward . /etc/resolv.conf {
+       max_concurrent 1000
+    }
+    cache 30 {
+       disable success cluster.local
+       disable denial cluster.local
+    }
+    loop
+    reload
+    loadbalance
+}
+
+
+
+BinaryData
+====
+```
+
+
 _Resources:_
+
+- https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/
+- https://oneuptime.com/blog/post/2026-02-09-coredns-kubernetes-plugin-discovery/view
+- https://coredns.io/manual/toc/
 
 ### Troubleshooting Service Network Traffic
 
