@@ -286,6 +286,16 @@ _Resources:_
 
 _Notes:_
 
+- From cilium, `cilium upgrade --reuse-values --set encryption.enabled=true --set-encryption.type=wireguard`
+- Then there'll be a NIC for wireguard:
+
+```
+17: cilium_wg0: <POINTOPOINT,NOARP,UP,LOWER_UP> mtu 1405 qdisc noqueue state UNKNOWN group default 
+    link/none
+```
+
+- `tcpdump -i cilium_wg0`: then use pod to send traffic to confirm that pod traffic go through wireguard NIC
+
 _Resources:_
 
 ### Managing TLS Certificates for Gateway API
