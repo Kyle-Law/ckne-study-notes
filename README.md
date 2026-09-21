@@ -128,6 +128,8 @@ _Notes:_
 
 I searched online and ... Multus is the best practice for this.
 
+Full walkthrough (Cilium + Multus setup): [1-5-Multi-Interface-Pod.md](1-5-Multi-Interface-Pod.md)
+
 _Resources:_
 
 ---
